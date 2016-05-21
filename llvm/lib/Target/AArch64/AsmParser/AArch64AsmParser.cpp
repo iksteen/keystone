@@ -4367,7 +4367,6 @@ bool AArch64AsmParser::ParseDirective(AsmToken DirectiveID) {
   const MCObjectFileInfo::Environment Format =
     getContext().getObjectFileInfo()->getObjectFileType();
   bool IsMachO = Format == MCObjectFileInfo::IsMachO;
-  bool IsCOFF = Format == MCObjectFileInfo::IsCOFF;
 
   StringRef IDVal = DirectiveID.getIdentifier();
   SMLoc Loc = DirectiveID.getLoc();
@@ -4384,7 +4383,7 @@ bool AArch64AsmParser::ParseDirective(AsmToken DirectiveID) {
   if (IDVal == ".unreq")
     return parseDirectiveUnreq(Loc);
 
-  if (!IsMachO && !IsCOFF) {
+  if (!IsMachO) {
     if (IDVal == ".inst")
       return parseDirectiveInst(Loc);
   }

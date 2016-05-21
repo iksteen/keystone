@@ -38,7 +38,6 @@
 #include "llvm/MC/MCSymbol.h"
 #include "llvm/Support/ARMBuildAttributes.h"
 #include "llvm/Support/ARMEHABI.h"
-#include "llvm/Support/COFF.h"
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/ELF.h"
 #include "llvm/Support/MathExtras.h"
@@ -5379,7 +5378,6 @@ bool ARMAsmParser::parsePrefix(ARMMCExpr::VariantKind &RefKind)
   }
 
   enum {
-    COFF = (1 << MCObjectFileInfo::IsCOFF),
     ELF = (1 << MCObjectFileInfo::IsELF),
     MACHO = (1 << MCObjectFileInfo::IsMachO)
   };
@@ -5388,8 +5386,8 @@ bool ARMAsmParser::parsePrefix(ARMMCExpr::VariantKind &RefKind)
     ARMMCExpr::VariantKind VariantKind;
     uint8_t SupportedFormats;
   } PrefixEntries[] = {
-    { "lower16", ARMMCExpr::VK_ARM_LO16, COFF | ELF | MACHO },
-    { "upper16", ARMMCExpr::VK_ARM_HI16, COFF | ELF | MACHO },
+    { "lower16", ARMMCExpr::VK_ARM_LO16, ELF | MACHO },
+    { "upper16", ARMMCExpr::VK_ARM_HI16, ELF | MACHO },
   };
 
   StringRef IDVal = Parser.getTok().getIdentifier();
@@ -5411,9 +5409,6 @@ bool ARMAsmParser::parsePrefix(ARMMCExpr::VariantKind &RefKind)
     break;
   case MCObjectFileInfo::IsELF:
     CurrentFormat = ELF;
-    break;
-  case MCObjectFileInfo::IsCOFF:
-    CurrentFormat = COFF;
     break;
   }
 
@@ -8986,7 +8981,6 @@ bool ARMAsmParser::ParseDirective(AsmToken DirectiveID)
   const MCObjectFileInfo::Environment Format =
     getContext().getObjectFileInfo()->getObjectFileType();
   bool IsMachO = Format == MCObjectFileInfo::IsMachO;
-  bool IsCOFF = Format == MCObjectFileInfo::IsCOFF;
 
   StringRef IDVal = DirectiveID.getIdentifier();
   if (IDVal == ".word")
@@ -9038,7 +9032,7 @@ bool ARMAsmParser::ParseDirective(AsmToken DirectiveID)
   else if (IDVal == ".thumb_set")
     return parseDirectiveThumbSet(DirectiveID.getLoc());
 
-  if (!IsMachO && !IsCOFF) {
+  if (!IsMachO) {
     if (IDVal == ".arch")
       return parseDirectiveArch(DirectiveID.getLoc());
     else if (IDVal == ".cpu")
