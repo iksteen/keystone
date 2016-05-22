@@ -411,7 +411,6 @@ MCAsmBackend *llvm::createAArch64leAsmBackend(const Target &T,
                                               const MCRegisterInfo &MRI,
                                               const Triple &TheTriple,
                                               StringRef CPU) {
-  assert(TheTriple.isOSBinFormatELF() && "Expect ELF target");
   uint8_t OSABI = MCELFObjectTargetWriter::getOSABI(TheTriple.getOS());
   return new ELFAArch64AsmBackend(T, OSABI, /*IsLittleEndian=*/true);
 }
@@ -420,8 +419,6 @@ MCAsmBackend *llvm::createAArch64beAsmBackend(const Target &T,
                                               const MCRegisterInfo &MRI,
                                               const Triple &TheTriple,
                                               StringRef CPU) {
-  assert(TheTriple.isOSBinFormatELF() &&
-         "Big endian is only supported for ELF targets!");
   uint8_t OSABI = MCELFObjectTargetWriter::getOSABI(TheTriple.getOS());
   return new ELFAArch64AsmBackend(T, OSABI,
                                   /*IsLittleEndian=*/false);
