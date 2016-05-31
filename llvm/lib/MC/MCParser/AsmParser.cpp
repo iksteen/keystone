@@ -704,6 +704,28 @@ size_t AsmParser::Run(bool NoInitialTextSection, uint64_t Address, bool NoFinali
     return 0;
   }
 
+  // Check to see that all assembler local symbols were actually defined.
+  // Targets that don't do subsections via symbols may not want this, though,
+  // so conservatively exclude them. Only do this if we're finalizing, though,
+  // as otherwise we won't necessarilly have seen everything yet.
+  if (!NoFinalize) {
+    for (const auto &TableEntry : getContext().getSymbols()) {
+      MCSymbol *Sym = TableEntry.getValue();
+      // Variable symbols may not be marked as defined, so check those
+      // explicitly. If we know it's a variable, we have a definition for
+      // the purposes of this check.
+      if (Sym->isTemporary() && !Sym->isVariable() && !Sym->isDefined()) {
+        // FIXME: We would really like to refer back to where the symbol was
+        // first referenced for a source location. We need to add something
+        // to track that. Currently, we just point to the end of the file.
+        //return Error(getLexer().getLoc(), "assembler local symbol '" +
+        //                                      Sym->getName() + "' not defined");    // qq: set KsError, then return 0
+        KsError = KS_ERR_ASM_SYMBOL_MISSING;
+        return 0;
+      }
+    }
+  }
+
   // Finalize the output stream if there are no errors and if the client wants
   // us to.
   if (!KsError) {
@@ -1930,7 +1952,7 @@ bool AsmParser::expandMacro(raw_svector_ostream &OS, StringRef Body,
 {
   unsigned NParameters = Parameters.size();
   bool HasVararg = NParameters ? Parameters.back().Vararg : false;
-  if ((NParameters != 0) && NParameters != A.size())
+  if (NParameters != A.size())
     //return Error(L, "Wrong number of arguments");
     return true;
 
