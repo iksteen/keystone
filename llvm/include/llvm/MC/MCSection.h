@@ -48,8 +48,6 @@ struct ilist_node_traits<MCFragment> {
 /// current translation unit.  The MCContext class uniques and creates these.
 class MCSection {
 public:
-  enum SectionVariant { SV_ELF = 0 };
-
   /// \brief Express the state of bundle locked groups while emitting code.
   enum BundleLockStateType {
     NotBundleLocked,
@@ -102,15 +100,12 @@ private:
   SmallVector<std::pair<unsigned, MCFragment *>, 1> SubsectionFragmentMap;
 
 protected:
-  MCSection(SectionVariant V, SectionKind K, MCSymbol *Begin);
-  SectionVariant Variant;
+  MCSection(SectionKind K, MCSymbol *Begin);
   SectionKind Kind;
   ~MCSection();
 
 public:
   SectionKind getKind() const { return Kind; }
-
-  SectionVariant getVariant() const { return Variant; }
 
   MCSymbol *getBeginSymbol() { return Begin; }
   const MCSymbol *getBeginSymbol() const {

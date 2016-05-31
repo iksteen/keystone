@@ -55,7 +55,7 @@ private:
   MCSectionELF(StringRef Section, unsigned type, unsigned flags, SectionKind K,
                unsigned entrySize, const MCSymbolELF *group, unsigned UniqueID,
                MCSymbol *Begin, const MCSectionELF *Associated)
-      : MCSection(SV_ELF, K, Begin), SectionName(Section), Type(type),
+      : MCSection(K, Begin), SectionName(Section), Type(type),
         Flags(flags), UniqueID(UniqueID), EntrySize(entrySize), Group(group),
         Associated(Associated) {
     if (Group)
@@ -88,7 +88,7 @@ public:
   const MCSectionELF *getAssociatedSection() const { return Associated; }
 
   static bool classof(const MCSection *S) {
-    return S->getVariant() == SV_ELF;
+    return true;
   }
 };
 
