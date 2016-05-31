@@ -247,7 +247,6 @@ void MCObjectFileInfo::InitMCObjectFileInfo(const Triple &TheTriple,
 
   TT = TheTriple;
 
-  Env = IsELF;
   initELFMCObjectFileInfo(TT);
 }
 

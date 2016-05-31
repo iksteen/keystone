@@ -312,11 +312,7 @@ public:
     return EHFrameSection;
   }
 
-  enum Environment { IsELF };
-  Environment getObjectFileType() const { return Env; }
-
 private:
-  Environment Env;
   MCContext *Ctx;
   Triple TT;
 

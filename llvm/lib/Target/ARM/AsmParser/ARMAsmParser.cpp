@@ -5377,16 +5377,12 @@ bool ARMAsmParser::parsePrefix(ARMMCExpr::VariantKind &RefKind)
     return true;
   }
 
-  enum {
-    ELF = (1 << MCObjectFileInfo::IsELF),
-  };
   static const struct PrefixEntry {
     const char *Spelling;
     ARMMCExpr::VariantKind VariantKind;
-    uint8_t SupportedFormats;
   } PrefixEntries[] = {
-    { "lower16", ARMMCExpr::VK_ARM_LO16, ELF},
-    { "upper16", ARMMCExpr::VK_ARM_HI16, ELF},
+    { "lower16", ARMMCExpr::VK_ARM_LO16},
+    { "upper16", ARMMCExpr::VK_ARM_HI16},
   };
 
   StringRef IDVal = Parser.getTok().getIdentifier();
@@ -5401,18 +5397,6 @@ bool ARMAsmParser::parsePrefix(ARMMCExpr::VariantKind &RefKind)
     return true;
   }
 
-  uint8_t CurrentFormat;
-  switch (getContext().getObjectFileInfo()->getObjectFileType()) {
-  case MCObjectFileInfo::IsELF:
-    CurrentFormat = ELF;
-    break;
-  }
-
-  if (~Prefix->SupportedFormats & CurrentFormat) {
-    //Error(Parser.getTok().getLoc(),
-    //      "cannot represent relocation in the current file format");
-    return true;
-  }
 
   RefKind = Prefix->VariantKind;
   Parser.Lex();

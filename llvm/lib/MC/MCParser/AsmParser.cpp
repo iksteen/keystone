@@ -549,14 +549,6 @@ AsmParser::AsmParser(SourceMgr &SM, MCContext &Ctx, MCStreamer &Out,
 
   // Initialize the platform / file format parser.
   PlatformParser.reset(createELFAsmParser());
-#if 0
-  switch (Ctx.getObjectFileInfo()->getObjectFileType()) {
-  case MCObjectFileInfo::IsELF:
-    PlatformParser.reset(createELFAsmParser());
-    break;
-  }
-#endif
-
   PlatformParser->Initialize(*this);
   initializeDirectiveKindMap(0);
 
